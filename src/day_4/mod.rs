@@ -22,13 +22,14 @@ impl<'a> Grid<'a> {
     }
 
     fn get(&self, x: isize, y: isize) -> Option<char> {
-        let index = x + self.width * y;
+        let index = x + (self.width + 2) * y;
         if x < self.width && y < self.height && x >= 0 && y >= 0 {
             return self.data.chars().nth(index.try_into().unwrap());
         } else {
             None
         }
     }
+
     fn check(&self, x: isize, y: isize, letter: char) -> bool {
         match self.get(x, y) {
             Some(c) => c == letter,
@@ -41,8 +42,8 @@ pub fn part_1(string: &str) -> i32 {
     let grid = Grid::new(string);
     let mut ans = 0;
 
-    for y in 0..grid.height {
-        for x in 0..grid.width {
+    for y in 0..=grid.height {
+        for x in 0..=grid.width {
             if grid.check(x, y, 'X') {
                 let left = x - 1;
                 let leftleft = x - 2;
@@ -122,5 +123,5 @@ pub fn part_1(string: &str) -> i32 {
 
 #[test]
 fn part_1_test() {
-    assert_eq!(part_1(TEST_INPUT), 1);
+    assert_eq!(part_1(TEST_INPUT), 2);
 }
