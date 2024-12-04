@@ -47,16 +47,16 @@ pub fn part_2(string: &str) -> i32 {
     let mut indices: Vec<usize> = [indice_1, indice_2].concat();
     indices.sort();
 
-    let mut segments: Vec<&str> = vec![];
+    let mut valid_segments: Vec<&str> = vec![];
     let mut start = 0;
     for index in indices {
-        segments.push(&string[start..index]);
+        valid_segments.push(&string[start..index]);
         start = index;
     }
-    segments.push(&string[start..]);
-    segments.retain(|s| !s.starts_with("don't"));
+    valid_segments.push(&string[start..]);
+    valid_segments.retain(|s| !s.starts_with("don't"));
     let mut ans = 0;
-    for ss in segments {
+    for ss in valid_segments {
         ans += part_1(ss);
     }
     ans
