@@ -27,13 +27,14 @@ impl<'a> Grid<'a> {
     }
 
     fn get(&self, x: isize, y: isize) -> Option<char> {
-        if x <= self.width && y <= self.height && x > 0 && y > 0 {
+        if x < self.width && y < self.height && x >= 0 && y >= 0 {
             return self
                 .data
                 .lines()
-                .nth((y - 1) as usize)?
+                .nth(y as usize)
+                .unwrap()
                 .chars()
-                .nth((x - 1) as usize);
+                .nth(x as usize);
         } else {
             None
         }
@@ -118,4 +119,37 @@ pub fn part_1(string: &str) -> i32 {
 #[test]
 fn part_1_test() {
     assert_eq!(part_1(TEST_INPUT), 18);
+}
+
+pub fn part_2(string: &str) -> i32 {
+    let grid = Grid::new(string);
+    let mut ans = 0;
+
+    for y in 0..grid.height {
+        for x in 0..grid.width {
+            if grid.check(x, y, 'A') {
+                let left = x - 1;
+                let right = x + 1;
+                let up = y - 1;
+                let down = y + 1;
+                if (grid.check(left, up, 'M') && grid.check(right, down, 'S')
+                    && grid.check(right, up, 'M') && grid.check(left, down, 'S'))
+                    || (grid.check(left, up, 'M') && grid.check(right, down, 'S')
+                    && grid.check(left, down, 'M') && grid.check(right, up, 'S'))
+                    || (grid.check(right, down, 'M') && grid.check(left, up, 'S')
+                    && grid.check(left, down, 'M') && grid.check(right, up, 'S'))
+                    || (grid.check(right, down, 'M') && grid.check(left, up, 'S')
+                    && grid.check(right, up, 'M') && grid.check(left, down, 'S'))
+                {
+                    ans += 1
+                }
+            }
+        }
+    }
+    ans
+}
+
+#[test]
+fn part_2_test() {
+    assert_eq!(part_2(TEST_INPUT), 9);
 }
