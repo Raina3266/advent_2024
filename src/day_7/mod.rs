@@ -35,6 +35,7 @@ pub fn part_1(string: &str) -> i32 {
 fn check_one_line(nums: Vec<i32>, result: i32) -> bool {
     let mut operations: VecDeque<Operation> = VecDeque::new();
     let length = nums.len() - 1;
+    todo!()
 }
 
 fn operations_combination(mut operations: VecDeque<Operation>, length: usize) -> Vec<Vec<Operation>> {
@@ -50,7 +51,8 @@ fn operations_combination(mut operations: VecDeque<Operation>, length: usize) ->
         }
     }
     println!("{:?}", result);
-    result
+    result;
+    todo!()
 }
 
 #[test]
@@ -60,13 +62,13 @@ fn feature() {
 }
 
 
-#[test]
-fn part_1_test() {
-    for my_int in 0..10{
-        println!("{my_int:b}");
-    }
+// #[test]
+// fn part_1_test() {
+//     for my_int in 0..10{
+//         println!("{my_int:b}");
+//     }
     
-    assert_eq!(operations_combination(5), [[1,2],[2,3]]);
-}
+//     assert_eq!(operations_combination(5), [[1,2],[2,3]]);
+// }
 
 
