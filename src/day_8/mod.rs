@@ -144,8 +144,8 @@ fn put_antinodes(
 
 fn pair_two_antennas(antenna: &[(isize, isize)]) -> Vec<(usize, usize)> {
     let mut result: Vec<(usize, usize)> = vec![];
-    for i in 0..(antenna.len()-1) {
-        for j in (i+1)..antenna.len() {
+    for i in 0..(antenna.len() - 1) {
+        for j in (i + 1)..antenna.len() {
             result.push((i, j))
         }
     }
@@ -155,4 +155,127 @@ fn pair_two_antennas(antenna: &[(isize, isize)]) -> Vec<(usize, usize)> {
 #[test]
 fn part_1_test() {
     assert_eq!(part_1(TEST_INPUT), 14);
+}
+
+pub fn part_2(string: &str) -> i32 {
+    let grid = Grid::new(string);
+    let mut ans: HashSet<(isize, isize), _> = HashSet::new();
+
+    let mut antennas_map: HashMap<char, Vec<(isize, isize)>> = HashMap::new();
+    let antennas = get_antennas(&grid);
+    for antenna in &antennas {
+        antennas_map
+            .entry(grid.get(*antenna).unwrap())
+            .and_modify(|v| v.push(*antenna))
+            .or_insert(vec![*antenna]);
+    }
+    for antenna in antennas_map {
+        let pairs = pair_two_antennas(&antenna.1);
+        for pair in pairs {
+            let first_antenna = antenna.1[pair.0];
+            let second_antenna = antenna.1[pair.1];
+            let antinodes = put_antinodes_part2(first_antenna, second_antenna, &grid);
+            for antinode in antinodes {
+                if antennas.clone().iter().any(|a| *a != antinode) {
+                    ans.insert(antinode);
+                }
+            }
+        }
+    }
+    ans.len().try_into().unwrap()
+}
+
+fn put_antinodes_part2(
+    first_antenna: (isize, isize),
+    second_antenna: (isize, isize),
+    grid: &Grid,
+) -> Vec<(isize, isize)> {
+    let mut result: Vec<(isize, isize)> = vec![];
+    let mut first_antinode: (isize, isize) = (first_antenna.0, first_antenna.1);
+    let mut second_antinode: (isize, isize) = (second_antenna.0, second_antenna.1);
+    let width_gap = (first_antenna.0 - second_antenna.0).abs();
+    let height_gap = (first_antenna.1 - second_antenna.1).abs();
+    if first_antenna.0 >= second_antenna.0 && first_antenna.1 >= second_antenna.1 {
+        while first_antinode.0 < grid.width - width_gap
+            && first_antinode.1 < grid.height - height_gap
+            && first_antinode.0 >= width_gap
+            && first_antinode.1 >= width_gap
+        {
+            first_antinode.0 += width_gap;
+            first_antinode.1 += height_gap;
+            result.push(first_antinode);
+        }
+        while second_antinode.0 < grid.width - width_gap
+            && second_antinode.1 < grid.height - height_gap
+            && second_antinode.0 >= width_gap
+            && second_antinode.1 >= width_gap
+        {
+            second_antinode.0 -= width_gap;
+            second_antinode.1 -= height_gap;
+            result.push(second_antinode);
+        }
+    } else if first_antenna.0 < second_antenna.0 && first_antenna.1 >= second_antenna.1 {
+        while first_antinode.0 < grid.width - width_gap
+            && first_antinode.1 < grid.height - height_gap
+            && first_antinode.0 >= width_gap
+            && first_antinode.1 >= width_gap
+        {
+            first_antinode.0 -= width_gap;
+            first_antinode.1 += height_gap;
+            result.push(first_antinode);
+        }
+        while second_antinode.0 < grid.width - width_gap
+            && second_antinode.1 < grid.height - height_gap
+            && second_antinode.0 >= width_gap
+            && second_antinode.1 >= width_gap
+        {
+            second_antinode.0 += width_gap;
+            second_antinode.1 -= height_gap;
+            result.push(second_antinode);
+        }
+    } else if first_antenna.0 >= second_antenna.0 && first_antenna.1 < second_antenna.1 {
+        while first_antinode.0 < grid.width - width_gap
+            && first_antinode.1 < grid.height - height_gap
+            && first_antinode.0 >= width_gap
+            && first_antinode.1 >= width_gap
+        {
+            first_antinode.0 += width_gap;
+            first_antinode.1 -= height_gap;
+            result.push(first_antinode);
+        }
+        while second_antinode.0 < grid.width - width_gap
+            && second_antinode.1 < grid.height - height_gap
+            && second_antinode.0 >= width_gap
+            && second_antinode.1 >= width_gap
+        {
+            second_antinode.0 -= width_gap;
+            second_antinode.1 += height_gap;
+            result.push(second_antinode);
+        }
+    } else if first_antenna.0 < second_antenna.0 && first_antenna.1 < second_antenna.1 {
+        while first_antinode.0 < grid.width - width_gap
+            && first_antinode.1 < grid.height - height_gap
+            && first_antinode.0 >= width_gap
+            && first_antinode.1 >= width_gap
+        {
+            first_antinode.0 -= width_gap;
+            first_antinode.1 -= height_gap;
+            result.push(first_antinode);
+        }
+        while second_antinode.0 < grid.width - width_gap
+            && second_antinode.1 < grid.height - height_gap
+            && second_antinode.0 >= width_gap
+            && second_antinode.1 >= width_gap
+        {
+            second_antinode.0 += width_gap;
+            second_antinode.1 += height_gap;
+            result.push(second_antinode);
+        }
+    }
+    result
+}
+
+#[test]
+fn part_2_test() {
+    assert_eq!(part_2(TEST_INPUT), 34);
 }
