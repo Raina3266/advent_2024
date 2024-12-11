@@ -11,13 +11,13 @@ enum Operation {
 }
 
 impl Operation {
-    fn switch(&self) -> Option<Self> {
+    fn change(&self) -> Option<Self> {
         match self {
             Self::Add => Some(Self::Mul),
             Self::Mul => None,
         }
     }
-    fn calculation(&self, x: i32, y: i32) -> i32{
+    fn calculate(&self, x: i32, y: i32) -> i32 {
         match self {
             Self::Add => x + y,
             Self::Mul => x * y,
@@ -26,49 +26,57 @@ impl Operation {
 }
 
 pub fn part_1(string: &str) -> i32 {
-    for l in string.lines(){
-
-    }
-    todo!()
-}
-
-fn check_one_line(nums: Vec<i32>, result: i32) -> bool {
-    let mut operations: VecDeque<Operation> = VecDeque::new();
-    let length = nums.len() - 1;
-    todo!()
-}
-
-fn operations_combination(mut operations: VecDeque<Operation>, length: usize) -> Vec<Vec<Operation>> {
-    let mut result: Vec<Vec<i32>> = vec![];
-    operations.push_front(Operation::Add);
-
-    for i in 0..length{
-        if operations[i] == Operation::Add {
-            operations[i].switch();
-        } else {
-            operations[i].switch();
-            operations.push_front(Operation::Mul);
+    let mut ans = 0;
+    for line in string.lines() {
+        let (first_part, second_part) = line.split_once(": ").unwrap();
+        let total: i32 = first_part.parse().unwrap();
+        let nums: Vec<i32> = second_part
+            .split_ascii_whitespace()
+            .map(|a| a.parse().unwrap())
+            .collect();
+        if check_each_line(&nums, total) {
+            ans += total;
         }
     }
-    println!("{:?}", result);
-    result;
-    todo!()
+    ans
+}
+
+fn check_each_line(nums: &[i32], total: i32) -> bool {
+    let mut initial_operations = vec![Operation::Add; nums.len() - 1];
+    let all_operations = operations_for_one_line(&mut initial_operations);
+    for operation in all_operations {
+        let start_num: i32 = nums[0];
+        let result: i32 = nums[1..operation.len()]
+            .iter()
+            .zip(operation.iter())
+            .fold(start_num, |acc, (num, op)| op.calculate(acc, *num));
+        if result == total {
+            return true;
+        }
+    }
+    false
+}
+
+fn operations_for_one_line(operations: &mut [Operation]) -> Vec<Vec<Operation>> {
+    let mut result: Vec<Vec<Operation>> = vec![];
+    result.push(operations.to_vec());
+    let mut position = operations.len() - 1;
+    loop {
+        for index in (position..operations.len() - 1).rev() {
+            if operations[index].change().is_some() {
+                operations[index] = operations[index].change().unwrap();
+                result.push(operations.to_vec());
+            }
+        }
+        if position == 0 {
+            break;
+        }
+        position -= 1;
+    }
+    result
 }
 
 #[test]
-fn feature() {
-
-    
+fn part_1_test() {
+    assert_eq!(part_1(TEST_INPUT), 3749);
 }
-
-
-// #[test]
-// fn part_1_test() {
-//     for my_int in 0..10{
-//         println!("{my_int:b}");
-//     }
-    
-//     assert_eq!(operations_combination(5), [[1,2],[2,3]]);
-// }
-
-

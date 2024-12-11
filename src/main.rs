@@ -8,5 +8,5 @@ mod day_7;
 mod day_8;
 
 fn main() {
-    println!("{}", day_8::part_1(day_8::INPUT));
+    println!("{}", day_8::part_2(day_8::INPUT));
 }
