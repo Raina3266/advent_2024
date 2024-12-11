@@ -1,10 +1,13 @@
-use std::{collections::VecDeque, fmt::Binary};
+use std::{
+    collections::{self, VecDeque},
+    fmt::Binary,
+};
 
 #[cfg(test)]
 const TEST_INPUT: &str = include_str!("./test_input.txt");
 pub const INPUT: &str = include_str!("./input.txt");
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 enum Operation {
     Add,
     Mul,
@@ -42,41 +45,52 @@ pub fn part_1(string: &str) -> i32 {
 }
 
 fn check_each_line(nums: &[i32], total: i32) -> bool {
-    let mut initial_operations = vec![Operation::Add; nums.len() - 1];
-    let all_operations = operations_for_one_line(&mut initial_operations);
+    let mut all_operations: Vec<Vec<Operation>> = vec![];
+    let mut changing_operations = vec![Operation::Add; nums.len() - 1];
+    let mut index = nums.len() - 2;
+    for index in (0..=nums.len() - 2).rev() {
+        let mut collection = operations_for_one_line(&mut changing_operations, index);
+        all_operations.append(&mut collection);
+    }
+    println!("{all_operations:?}");
+
     for operation in all_operations {
-        let start_num: i32 = nums[0];
-        let result: i32 = nums[1..operation.len()]
-            .iter()
-            .zip(operation.iter())
-            .fold(start_num, |acc, (num, op)| op.calculate(acc, *num));
-        if result == total {
+        if total == compute(&operation, nums) {
             return true;
         }
     }
     false
 }
 
-fn operations_for_one_line(operations: &mut [Operation]) -> Vec<Vec<Operation>> {
-    let mut result: Vec<Vec<Operation>> = vec![];
-    result.push(operations.to_vec());
-    let mut position = operations.len() - 1;
+fn operations_for_one_line(operations: &mut [Operation], index: usize) -> Vec<Vec<Operation>> {
+    let mut collections: Vec<Vec<Operation>> = vec![];
+    let mut first = operations.len();
+    let last = operations.len() - 1;
     loop {
-        for index in (position..operations.len() - 1).rev() {
-            if operations[index].change().is_some() {
-                operations[index] = operations[index].change().unwrap();
-                result.push(operations.to_vec());
+        first -= 1;
+        for i in (first..=last).rev() {
+            while operations[i].change().is_some() {
+                operations[i] = operations[i].change().unwrap();
+                collections.push(operations.to_vec());
             }
         }
-        if position == 0 {
+
+        if first == index && operations[first].change().is_none() {
             break;
         }
-        position -= 1;
     }
-    result
+    collections
+}
+
+fn compute(operations: &[Operation], nums: &[i32]) -> i32 {
+    let mut total: i32 = nums[0];
+    for (num, operation) in nums[1..].iter().zip(operations.iter()) {
+        total = operation.calculate(*num, total);
+    }
+    total
 }
 
 #[test]
 fn part_1_test() {
-    assert_eq!(part_1(TEST_INPUT), 3749);
+    assert_eq!(part_1(TEST_INPUT), 292);
 }
