@@ -7,8 +7,10 @@ pub fn part_1(string: &str) -> i32 {
         .split_ascii_whitespace()
         .map(|a| a.to_string())
         .collect();
-    for _ in 0..24 {
+
+    for _ in 0..25 {
         let mut n = 0;
+
         while n < nums.len() {
             if nums[n] == "0" {
                 nums[n] = "1".to_string();
@@ -20,7 +22,6 @@ pub fn part_1(string: &str) -> i32 {
                     right.trim_start_matches('0').to_string(),
                 ];
                 nums.splice(n..n + 1, replace);
-                println!("{nums:?}");
                 n += 2;
             } else {
                 let new_num = nums[n].parse::<i32>().unwrap() * 2024;
