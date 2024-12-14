@@ -3,43 +3,53 @@ const TEST_INPUT: &str = include_str!("./test_input.txt");
 pub const INPUT: &str = include_str!("./input.txt");
 type Number = u64;
 
-pub fn part_1(string: &str) -> Number {
-    let mut nums: Vec<String> = string
-        .split_ascii_whitespace()
-        .map(|a| a.to_string())
-        .collect();
+type Num = u64;
+
+pub fn part_1(string: &str) -> i64 {
+    let mut nums = parse_numbers(string);
 
     for i in 0..25 {
         println!("print step {i}");
         let mut n = 0;
 
         while n < nums.len() {
-            if nums[n] == "0" {
-                nums[n] = "1".to_string();
+            if nums[n] == 0 {
+                nums[n] = 1;
                 n += 1;
                 continue;
-            } else if nums[n].chars().count() % 2 == 0 {
-                let (left, right) = nums[n].split_at(nums[n].len() / 2);
-                let mut new_right = right.trim_start_matches('0').to_string();
-                if new_right.is_empty() {
-                    new_right = String::from("0");
-                }
-                let replace: Vec<String> = vec![
-                    left.trim_start_matches('0').to_string(),
-                    new_right.to_string(),
-                ];
-                nums.splice(n..n + 1, replace);
+            } else if count_digits(nums[n]) % 2 == 0 {
+                let (left, right) = split_num_into_digits(nums[n]);
+                nums[n] = left;
+                nums.insert(n + 1, right);
                 n += 2;
                 continue;
             } else {
-                let new_num = nums[n].parse::<Number>().unwrap() * 2024;
-                let new = new_num.to_string();
-                nums[n] = new;
+                nums[n] *= 2024;
                 n += 1;
             }
         }
     }
     nums.len().try_into().unwrap()
+}
+
+fn parse_numbers(input: &str) -> Vec<Num> {
+    input
+        .split_whitespace()
+        .map(|s| s.parse().unwrap())
+        .collect()
+}
+
+fn count_digits(num: Num) -> usize {
+    let mut digits = 0;
+}
+
+fn split_num_into_digits(num: Num) -> (Num, Num) {
+    todo!()
+}
+
+#[test]
+fn digits() {
+    assert_eq!(0, 0000);
 }
 
 #[test]
