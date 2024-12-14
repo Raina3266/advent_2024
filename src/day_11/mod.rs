@@ -39,17 +39,25 @@ fn parse_numbers(input: &str) -> Vec<Num> {
         .collect()
 }
 
-fn count_digits(num: Num) -> usize {
+fn count_digits(mut num: Num) -> usize {
     let mut digits = 0;
+    while num != 0 {
+        num /= 10;
+        digits += 1;
+    }
+    digits
 }
 
 fn split_num_into_digits(num: Num) -> (Num, Num) {
-    todo!()
+    let digits = count_digits(num);
+    
 }
 
 #[test]
 fn digits() {
-    assert_eq!(0, 0000);
+    let num = 98327489;
+   let digits = count_digits(num);
+   assert_eq!(digits, 8);
 }
 
 #[test]
