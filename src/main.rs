@@ -12,5 +12,5 @@ mod day_12;
 mod day_13;
 
 fn main() {
-    println!("{}", day_13::part_1(day_13::INPUT));
+    println!("{}", day_11::part_1(day_11::INPUT));
 }

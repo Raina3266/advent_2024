@@ -1,14 +1,16 @@
 #[cfg(test)]
 const TEST_INPUT: &str = include_str!("./test_input.txt");
 pub const INPUT: &str = include_str!("./input.txt");
+type Number = u64;
 
-pub fn part_1(string: &str) -> i64 {
+pub fn part_1(string: &str) -> Number {
     let mut nums: Vec<String> = string
         .split_ascii_whitespace()
         .map(|a| a.to_string())
         .collect();
 
-    for _ in 0..75 {
+    for i in 0..25 {
+        println!("print step {i}");
         let mut n = 0;
 
         while n < nums.len() {
@@ -30,7 +32,7 @@ pub fn part_1(string: &str) -> i64 {
                 n += 2;
                 continue;
             } else {
-                let new_num = nums[n].parse::<u128>().unwrap() * 2024;
+                let new_num = nums[n].parse::<Number>().unwrap() * 2024;
                 let new = new_num.to_string();
                 nums[n] = new;
                 n += 1;
