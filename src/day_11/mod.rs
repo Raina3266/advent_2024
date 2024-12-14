@@ -50,14 +50,26 @@ fn count_digits(mut num: Num) -> usize {
 
 fn split_num_into_digits(num: Num) -> (Num, Num) {
     let digits = count_digits(num);
-    
+    let base: Num = (10 as Num).pow(digits as u32 / 2);
+
+
+    let left = num / base;
+    let right = num % base;
+
+    (left, right)
 }
 
 #[test]
 fn digits() {
-    let num = 98327489;
-   let digits = count_digits(num);
-   assert_eq!(digits, 8);
+    assert_eq!(count_digits(1), 1);
+    assert_eq!(count_digits(123), 3);
+    assert_eq!(count_digits(98327489), 8);
+}
+
+#[test]
+fn split_num_works() {
+    assert_eq!(split_num_into_digits(1234), (12, 34));
+    assert_eq!(split_num_into_digits(11), (1, 1));
 }
 
 #[test]
