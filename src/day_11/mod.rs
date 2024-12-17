@@ -7,7 +7,7 @@ type Number = u64;
 
 type Num = u64;
 
-pub fn part_1(string: &str) -> usize {
+pub fn part_1_and_2 (string: &str) -> usize {
     let nums = parse_numbers(string);
 
     solve_list(&nums, 75)
@@ -126,5 +126,5 @@ fn blink_test() {
 
 #[test]
 fn part_1_test() {
-    assert_eq!(part_1(TEST_INPUT), 55312);
+    assert_eq!(part_1_and_2(TEST_INPUT), 55312);
 }

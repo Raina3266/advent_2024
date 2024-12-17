@@ -12,10 +12,8 @@ mod day_9;
 mod day_11;
 mod day_12;
 mod day_13;
+mod day_14;
 
 fn main() {
-    let start = Instant::now();
-    let result = day_11::part_1(day_11::INPUT);
-    let duration = start.elapsed();
-    println!("{result} (took {duration:?})");
+    println!("{}", day_7::part_1(day_7::INPUT));
 }
