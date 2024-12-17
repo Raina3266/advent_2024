@@ -1,10 +1,21 @@
-type Number = u64;
+type Number = i64;
 
 #[cfg(test)]
 const TEST_INPUT: &str = include_str!("./test_input.txt");
 pub const INPUT: &str = include_str!("./input.txt");
 
 pub fn part_1(string: &str) -> Number {
+    let machines = get_machine_number(string);
+
+    let mut ans = 0;
+    for one in machines {
+        let win = one_machine_to_win(one);
+        ans += find_cheapest(win);
+    }
+    ans
+}
+
+fn get_machine_number(string: &str) -> Vec<Vec<Number>> {
     let raw_machines: Vec<&str> = string.split("\n\n").collect();
     let mut machines: Vec<Vec<Number>> = vec![];
 
@@ -24,20 +35,13 @@ pub fn part_1(string: &str) -> Number {
         nums.push(num);
         machines.push(nums);
     }
-
-    let mut ans = 0;
-    for one in machines {
-        let win = one_machine_to_win(one);
-        ans += find_cheapest(win);
-    }
-    ans
+    machines
 }
-
-// Button A: X+94, Y+34 (x:80)
-// Button B: X+22, Y+67 (y:40)
+// Button A: X+94, Y+34 (a:80)
+// Button B: X+22, Y+67 (b:40)
 // Prize: X=8400, Y=5400
-// 80*94 + 40*22 = 8400
-// 80*34 + 40*67 = 5400
+// a*button_a_x + b*button_b_x = 8400
+// a* button_a_y + b*button_b_y = 5400
 
 fn one_machine_to_win(nums: Vec<Number>) -> Vec<(Number, Number)> {
     let mut winning: Vec<(Number, Number)> = vec![];
@@ -48,14 +52,16 @@ fn one_machine_to_win(nums: Vec<Number>) -> Vec<(Number, Number)> {
     let prize_x = nums[4];
     let prize_y = nums[5];
 
-    for x in 0..1000 {
-        for y in 0..1000 {
-            if button_a_x * x + button_b_x * y == prize_x
-                && button_a_y * x + button_b_y * y == prize_y
-            {
-                winning.push((x, y));
-            }
+    let left_gap = (button_b_x * button_a_y - button_b_y * button_a_x).abs();
+    let right_gap = (prize_x * button_a_y - prize_y * button_a_x).abs();
+
+    if right_gap % left_gap == 0 {
+        let button_b = right_gap / left_gap;
+        if (prize_x - button_b * button_b_x) % button_a_x == 0 {
+            let button_a = (prize_x - button_b * button_b_x) / button_a_x;
+            winning.push((button_a, button_b));
         }
+        
     }
     winning
 }
@@ -75,4 +81,46 @@ fn find_cheapest(win: Vec<(Number, Number)>) -> Number {
 #[test]
 fn part_1_test() {
     assert_eq!(part_1(TEST_INPUT), 480);
+}
+
+pub fn part_2(string: &str) -> Number {
+    let machines = get_machine_number(string);
+    let mut ans = 0;
+    for one in machines {
+        let win = one_machine_to_win_part_two(one);
+        println!("{win:?}");
+        ans += find_cheapest(win);
+    }
+    ans
+}
+
+fn one_machine_to_win_part_two(nums: Vec<Number>) -> Vec<(Number, Number)> {
+    let mut winning: Vec<(Number, Number)> = vec![];
+    let button_a_x = nums[0];
+    let button_a_y = nums[1];
+    let button_b_x = nums[2];
+    let button_b_y = nums[3];
+    let prize_x = nums[4] + 10000000000000;
+    let prize_y = nums[5] + 10000000000000;
+
+    // button_a_x * button_a + button_b_x * button_b == prize_x
+    // button_a_y * button_a + button_b_y * button_b == prize_y
+
+    let left_gap = (button_b_x * button_a_y - button_b_y * button_a_x).abs();
+    let right_gap = (prize_x * button_a_y - prize_y * button_a_x).abs();
+
+    if right_gap % left_gap == 0 {
+        let button_b = right_gap / left_gap;
+        if (prize_x - button_b * button_b_x) % button_a_x == 0 {
+            let button_a = (prize_x - button_b * button_b_x) / button_a_x;
+            winning.push((button_a, button_b));
+        }
+        
+    }
+    winning
+}
+
+#[test]
+fn part_2_test() {
+    assert_eq!(part_2(TEST_INPUT), 480);
 }
