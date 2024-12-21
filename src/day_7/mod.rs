@@ -29,21 +29,21 @@ pub fn part_1(string: &str) -> i64 {
         let split: Vec<&str> = line.split_ascii_whitespace().collect();
         let nums: Vec<i64> = split[1..].iter().map(|n| n.parse().unwrap()).collect();
         let total: i64 = split[0].trim_end_matches(':').parse().unwrap();
-        let list_of_operations = create_operations(nums.len() - 1);
+        let list_of_operations = create_operations_part_1(nums.len() - 1);
 
-        if check_each_line(total, list_of_operations, &nums) {
+        if check_each_line_part_1(total, list_of_operations, &nums) {
             ans += total;
         }
     }
     ans
 }
 
-fn create_operations(length: usize) -> Vec<Vec<Part_One_Operation>> {
+fn create_operations_part_1(length: usize) -> Vec<Vec<Part_One_Operation>> {
     let mut operations = vec![Part_One_Operation::Add; length];
     let mut result: Vec<Vec<Part_One_Operation>> = vec![operations.clone()];
 
     loop {
-        create_one_operation(&mut operations);
+        create_one_operation_part_1(&mut operations);
         result.push(operations.clone());
         if operations.iter().all(|opt| *opt == Part_One_Operation::Mul) {
             return result;
@@ -51,7 +51,7 @@ fn create_operations(length: usize) -> Vec<Vec<Part_One_Operation>> {
     }
 }
 
-fn create_one_operation(input: &mut [Part_One_Operation]) {
+fn create_one_operation_part_1(input: &mut [Part_One_Operation]) {
     let mut pointer = input.len() - 1;
     loop {
         if input[pointer].next().is_some() {
@@ -64,7 +64,7 @@ fn create_one_operation(input: &mut [Part_One_Operation]) {
     }
 }
 
-fn compute(operations: Vec<Part_One_Operation>, nums: &[i64]) -> i64 {
+fn compute_part_1(operations: Vec<Part_One_Operation>, nums: &[i64]) -> i64 {
     let mut result = nums[0];
     for (a, b) in nums[1..].iter().zip(operations) {
         result = b.calculate(*a, result)
@@ -72,9 +72,13 @@ fn compute(operations: Vec<Part_One_Operation>, nums: &[i64]) -> i64 {
     result.into()
 }
 
-fn check_each_line(total: i64, list_of_operations: Vec<Vec<Part_One_Operation>>, nums: &[i64]) -> bool {
+fn check_each_line_part_1(
+    total: i64,
+    list_of_operations: Vec<Vec<Part_One_Operation>>,
+    nums: &[i64],
+) -> bool {
     for operations in list_of_operations {
-        if compute(operations, &nums) == total {
+        if compute_part_1(operations, &nums) == total {
             return true;
         }
     }
@@ -86,8 +90,7 @@ fn part_1_test() {
     assert_eq!(part_1(TEST_INPUT), 3749);
 }
 
-
-
+#[derive(PartialEq, Clone, Copy, Debug)]
 enum Part_Two_Operation {
     Add,
     Mul,
@@ -119,4 +122,72 @@ fn concatenation(x: i64, y: i64) -> i64 {
         y_length += 1;
     }
     x * 10_i64.pow(y_length) + y
+}
+
+pub fn part_2(string: &str) -> i64 {
+    let mut ans = 0;
+    for line in string.lines() {
+        let split: Vec<&str> = line.split_ascii_whitespace().collect();
+        let nums: Vec<i64> = split[1..].iter().map(|n| n.parse().unwrap()).collect();
+        let total: i64 = split[0].trim_end_matches(':').parse().unwrap();
+        let list_of_operations = create_operations_part_2(nums.len() - 1);
+
+        if check_each_line_part_2(total, list_of_operations, &nums) {
+            ans += total;
+        }
+    }
+    ans
+}
+
+fn create_operations_part_2(length: usize) -> Vec<Vec<Part_Two_Operation>>{
+    let mut list_of_operations: Vec<Vec<Part_Two_Operation>> = vec![];
+    let mut operations = vec![Part_Two_Operation::Add; length];
+    loop {
+        list_of_operations.push(operations.to_vec());
+        if operations.iter().all(|opt| *opt == Part_Two_Operation::Con) {
+            break;
+        }
+        create_one_operation_part_2(&mut operations);
+    }
+    list_of_operations
+}
+
+fn create_one_operation_part_2(operations: &mut [Part_Two_Operation]) {
+    let mut pointer = operations.len() -1;
+    loop {
+        if operations[pointer].next().is_some() {
+            operations[pointer] = operations[pointer].next().unwrap();
+            break;
+        } else {
+            operations[pointer] = Part_Two_Operation::Add;
+            pointer -= 1;
+        }
+    }
+
+}
+
+fn check_each_line_part_2(
+    total: i64,
+    list_of_operations: Vec<Vec<Part_Two_Operation>>,
+    nums: &[i64],
+) -> bool {
+    for operations in list_of_operations {
+        if compute_part_2(operations.clone(), nums) == total {
+            return true;
+        }
+    }
+    false
+}
+
+fn compute_part_2(operations: Vec<Part_Two_Operation>, nums: &[i64]) -> i64 {
+    let mut result = nums[0];
+    for (a, b) in nums[1..].iter().zip(operations) {
+        result = b.calculate(result, *a);
+    }
+    result
+}
+
+#[test]
+fn part_2_test() {
+    assert_eq!(part_2(TEST_INPUT), 11387);
 }

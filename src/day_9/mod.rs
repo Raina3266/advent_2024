@@ -19,7 +19,6 @@ pub fn part_1(string: &str) -> i32 {
             nums.splice(index..replace.len(), replace);
         }
     }
-    println!("{nums:?}");
     todo!()
 }
 
