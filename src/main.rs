@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::io;
 
 mod day_1;
 mod day_2;
@@ -15,5 +15,5 @@ mod day_13;
 mod day_14;
 
 fn main() {
-    println!("{}", day_7::part_2(day_7::INPUT));
+   day_14::part_2(day_14::INPUT);
 }
