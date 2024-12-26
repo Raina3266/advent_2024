@@ -139,7 +139,7 @@ fn part_1_test() {
     assert_eq!(part_1(TEST_INPUT), 12);
 }
 
-const SKIP: usize = 300;
+const SKIP: usize = 8256;
 pub fn part_2(string: &str) {
     let mut grid = Grid::new(0, 101, 103);
     let mut robots: Vec<_> = string.lines().map(Robot::new).collect();
