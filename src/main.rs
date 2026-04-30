@@ -16,5 +16,5 @@ mod day_14;
 mod day_15;
 
 fn main() {
-   day_15::part_1(day_15::INPUT);
+   day_15::part_1(day_15::TEST_INPUT);
 }
