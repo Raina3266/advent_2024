@@ -1,14 +1,14 @@
 pub const TEST_INPUT: &str = include_str!("./test_input.txt");
 pub const INPUT: &str = include_str!("./input.txt");
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Copy)]
 struct Grid {
     data: Vec<Vec<Node>>,
     robot: (usize, usize),
 }
 
 impl Grid {
-    fn new(input: &str) -> Grid {
+    fn parse(input: &str) -> Grid {
         let mut data: Vec<Vec<Node>> = Vec::new();
         let mut robot = (0, 0);
         for (height, line) in input.lines().enumerate() {
@@ -31,6 +31,13 @@ impl Grid {
         }
         Grid { data, robot }
     }
+    
+    fn get_location(&self, x: usize, y: usize) -> Node {
+        self.data[y][x]
+    }
+    
+    // ==========================
+    // NO MORE VEC INDEXING (vec[i]) BELOW HERE
 
     fn gps_coordinate(&self) -> i32 {
         let mut sum = 0;
@@ -47,7 +54,6 @@ impl Grid {
     fn move_once(&mut self, x: usize, y: usize, direction: &Move) {
         if self.moveable(x, y, direction) {
             self.data[y][x] = Node::Empty;
-            self.move_boxes(x, y, direction);
             match direction {
                 Move::Up => {
                     if self.data[y - 1][x] == Node::Box {
@@ -84,14 +90,6 @@ impl Grid {
             }
         }
     }
-    fn move_boxes(&mut self, x: usize, y: usize, direction: &Move) {
-        match direction {
-            Move::Up => {}
-            Move::Down => {}
-            Move::Left => {}
-            Move::Right => {}
-        }
-    }
 
     fn moveable(&self, x: usize, y: usize, direction: &Move) -> bool {
         match direction {
@@ -119,7 +117,7 @@ impl Grid {
     }
 }
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Copy)]
 enum Node {
     Empty,
     Box,
@@ -135,25 +133,24 @@ enum Move {
     Right,
 }
 
-impl Move {
-    fn new(input: &str) -> Vec<Move> {
-        input
-            .chars()
-            .filter_map(|step| match step {
-                '^' => Some(Move::Up),
-                'v' => Some(Move::Down),
-                '>' => Some(Move::Right),
-                '<' => Some(Move::Left),
-                _ => None,
-            })
-            .collect()
-    }
+fn parse_moves(input: &str) -> Vec<Move> {
+    input
+        .lines()
+        .flat_map(|line| line.chars())
+        .map(|char| match char {
+            '^' => Move::Up,
+            'v' => Move::Down,
+            '>' => Move::Right,
+            '<' => Move::Left,
+            _ => unreachable!(),
+        })
+        .collect()
 }
 
 pub fn part_1(string: &str) -> i32 {
     let mut iter = string.split("\n\n");
-    let mut grid = Grid::new(iter.next().unwrap());
-    let moves = Move::new(iter.next().unwrap());
+    let mut grid = Grid::parse(iter.next().unwrap());
+    let moves = parse_moves(iter.next().unwrap());
 
     for one_move in moves {
         grid.move_once(grid.robot.0, grid.robot.1, &one_move);
